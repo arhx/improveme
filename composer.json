@@ -1,0 +1,46 @@
+{
+    "name": "arhx/improveme",
+    "description": "Drop-in feedback & bug-report widget for Laravel. A floating bug icon lets users describe an issue or suggestion, visually pick the related DOM block (drill-down picker), and ships the report (HTML, selector, screenshot) to Telegram and/or a log file.",
+    "keywords": ["laravel", "bug-report", "feedback", "widget", "telegram", "screenshot", "qa"],
+    "type": "library",
+    "license": "MIT",
+    "homepage": "https://github.com/arhx/improveme",
+    "authors": [
+        {
+            "name": "arhx",
+            "email": "arhx.dev@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "illuminate/support": "^10.0|^11.0|^12.0|^13.0",
+        "illuminate/http": "^10.0|^11.0|^12.0|^13.0",
+        "irazasyed/telegram-bot-sdk": "^3.16"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^8.0|^9.0|^10.0",
+        "laravel/pint": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Arhx\\Improveme\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Arhx\\Improveme\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Arhx\\Improveme\\ImprovemeServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true
+    }
+}
