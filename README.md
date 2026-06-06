@@ -140,7 +140,10 @@ Route::post('feedback', \App\Http\Controllers\MyReportController::class);
 4. Hovering the selected block now **sees through it** — the outline previews
    the block *behind* it; clicking again drills to that containing block.
 5. Press **Esc** (or **Done**) to finish. A screenshot of the selection
-   (padded by 15px) is captured client-side via `html2canvas`.
+   (padded by 15px) is captured client-side via
+   [html2canvas-pro](https://github.com/yorickshan/html2canvas-pro) — a
+   maintained html2canvas fork that understands Tailwind 4's `oklch()` colours
+   (lazy-loaded from a CDN; URL configurable via `IMPROVEME_HTML2CANVAS_URL`).
 
 The report payload includes a unique CSS selector, the element's `outerHTML`
 (truncated), its bounding rect, the page URL/title, viewport, user agent, the

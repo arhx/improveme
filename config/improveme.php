@@ -62,10 +62,14 @@ return [
         'z_index' => (int) env('IMPROVEME_Z_INDEX', 2147483000),
         'screenshot_padding' => (int) env('IMPROVEME_SCREENSHOT_PADDING', 15), // px around selection
         'max_html' => (int) env('IMPROVEME_MAX_HTML', 20000), // truncate captured outerHTML
-        // CDN for html2canvas (lazy-loaded only when a screenshot is taken).
+        // CDN for the screenshot engine (lazy-loaded only when a screenshot is
+        // taken). Defaults to html2canvas-pro — a maintained html2canvas fork
+        // that supports modern CSS colour functions (oklch/lab/color()), which
+        // Tailwind 4 emits for every colour. It exposes the same `html2canvas`
+        // global, so the original library works too if you point this back at it.
         'html2canvas_url' => env(
             'IMPROVEME_HTML2CANVAS_URL',
-            'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js'
+            'https://cdn.jsdelivr.net/npm/html2canvas-pro@1.5.11/dist/html2canvas-pro.min.js'
         ),
         'labels' => [
             'title' => 'Send feedback',
