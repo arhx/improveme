@@ -373,9 +373,9 @@
 
   function corner(p) {
     p = p || 'bottom-right';
-    var v = p.indexOf('top') === 0 ? 'top:20px' : 'bottom:20px';
-    var h = p.indexOf('left') >= 0 ? 'left:20px' : 'right:20px';
-    var pv = p.indexOf('top') === 0 ? 'top:78px' : 'bottom:78px';
+    var v = p.indexOf('top') === 0 ? 'top:8px' : 'bottom:8px';
+    var h = p.indexOf('left') >= 0 ? 'left:8px' : 'right:8px';
+    var pv = p.indexOf('top') === 0 ? 'top:42px' : 'bottom:42px';
     return { fab: v + ';' + h, panelV: pv, panelH: h };
   }
 
@@ -383,11 +383,11 @@
     return '<style>' +
       ':host{all:initial}' +
       '*{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}' +
-      '.im-fab{position:fixed;' + pos.fab + ';width:48px;height:48px;border-radius:50%;border:0;cursor:pointer;' +
+      '.im-fab{position:fixed;' + pos.fab + ';width:24px;height:24px;border-radius:50%;border:0;cursor:pointer;' +
       'background:' + ACCENT + ';color:#fff;display:flex;align-items:center;justify-content:center;' +
-      'box-shadow:0 6px 20px rgba(0,0,0,.25);transition:transform .15s}' +
+      'box-shadow:0 3px 10px rgba(0,0,0,.25);transition:transform .15s}' +
       '.im-fab:hover{transform:scale(1.08)}' +
-      '.im-fab svg{width:24px;height:24px}' +
+      '.im-fab svg{width:14px;height:14px}' +
       '.im-panel{position:fixed;' + pos.panelV + ';' + pos.panelH + ';width:320px;max-width:calc(100vw - 32px);' +
       'background:#fff;color:#111827;border-radius:14px;box-shadow:0 16px 48px rgba(0,0,0,.28);' +
       'opacity:0;transform:translateY(10px) scale(.98);pointer-events:none;transition:.16s;overflow:hidden}' +
