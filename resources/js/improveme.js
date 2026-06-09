@@ -161,7 +161,16 @@
     });
   }
 
+  // True when an event originates from our own picker UI (the banner and its
+  // Done/Cancel buttons). Those must keep working normally while picking — the
+  // cursor over them should not preview/select the page block behind them.
+  function onOwnUi(e) {
+    var t = e.target;
+    return !!(t && t.closest && t.closest('[data-improveme]'));
+  }
+
   function onMove(e) {
+    if (onOwnUi(e)) { hoverEl = null; hoverBox.style.display = 'none'; return; }
     var t = targetAt(e.clientX, e.clientY);
     hoverEl = t;
     if (t && t !== pickedEl) { positionBox(hoverBox, t); hoverBox.style.display = 'block'; }
@@ -169,6 +178,9 @@
   }
 
   function onClick(e) {
+    // Let clicks on the banner (Done/Cancel) through to their own handlers —
+    // don't pick the block behind it and don't swallow the click.
+    if (onOwnUi(e)) return;
     e.preventDefault();
     e.stopPropagation();
     var t = hoverEl || targetAt(e.clientX, e.clientY);
