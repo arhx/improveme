@@ -25,4 +25,4 @@
     ];
 @endphp
 <script>window.__IMPROVEME__ = @json($boot);</script>
-<script src="{{ route('improveme.widget') }}" defer></script>
+<script src="{{ route('improveme.widget') }}?v={{ \Arhx\Improveme\Http\Controllers\WidgetController::assetVersion() }}" defer></script>
