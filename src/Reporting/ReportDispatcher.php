@@ -3,12 +3,14 @@
 namespace Arhx\Improveme\Reporting;
 
 use Arhx\Improveme\Reporting\Channels\Channel;
+use Arhx\Improveme\Reporting\Channels\GitHubIssueChannel;
 use Arhx\Improveme\Reporting\Channels\LogChannel;
 use Arhx\Improveme\Reporting\Channels\TelegramChannel;
 
 /**
  * Builds the configured channels and fans a report out to every enabled one.
- * The log channel is always present; Telegram joins only when configured.
+ * The log channel is always present; Telegram and GitHub join only when
+ * configured.
  */
 class ReportDispatcher
 {
@@ -31,6 +33,7 @@ class ReportDispatcher
         return [
             new LogChannel($channels['log'] ?? []),
             new TelegramChannel($channels['telegram'] ?? []),
+            new GitHubIssueChannel($channels['github'] ?? []),
         ];
     }
 }

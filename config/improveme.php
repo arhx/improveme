@@ -110,6 +110,24 @@ return [
             // 'HTML' or 'MarkdownV2'
             'parse_mode' => 'HTML',
         ],
+
+        // Files a GitHub issue per report so the feedback lands right in the
+        // repo's tracker — ideal for an AI agent (or a human) to read and act
+        // on. Off by default; needs a token with issues:write + the repo slug.
+        'github' => [
+            'enabled' => env('IMPROVEME_GITHUB_ENABLED', false),
+            // Classic PAT with `repo`, or a fine-grained PAT with Issues: R/W.
+            'token' => env('IMPROVEME_GITHUB_TOKEN'),
+            // Target repository as "owner/repo".
+            'repo' => env('IMPROVEME_GITHUB_REPO'),
+            // Labels added to every issue (missing ones are created by GitHub).
+            'labels' => ['improveme'],
+            // Per-type labels appended on top of the shared ones.
+            'label_bug' => env('IMPROVEME_GITHUB_LABEL_BUG', 'bug'),
+            'label_idea' => env('IMPROVEME_GITHUB_LABEL_IDEA', 'enhancement'),
+            // Override for GitHub Enterprise (e.g. https://ghe.example.com/api/v3).
+            'api_url' => env('IMPROVEME_GITHUB_API_URL', 'https://api.github.com'),
+        ],
     ],
 
     /*

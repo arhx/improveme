@@ -44,6 +44,25 @@ as caption). Leave them unset and only the log channel runs.
 
 To send into a forum topic: `IMPROVEME_TELEGRAM_THREAD_ID=42`.
 
+## File GitHub issues (optional)
+
+Turn each report into a GitHub issue in your repo's tracker — handy when you
+want feedback to land somewhere an AI coding agent (or a human) can read and act
+on directly:
+
+```dotenv
+IMPROVEME_GITHUB_ENABLED=true
+IMPROVEME_GITHUB_TOKEN=ghp_your_token        # PAT with issues:write
+IMPROVEME_GITHUB_REPO=owner/repo
+```
+
+Use a classic PAT with the `repo` scope, or a fine-grained PAT scoped to
+**Issues: Read and write** on the target repo. Each issue gets the report's
+message as title, the page URL, picked selector/HTML, browser console errors and
+a screenshot reference in the body, labelled `improveme` + `bug`/`enhancement`
+(missing labels are created automatically). Channels stack — Telegram and GitHub
+can both be on at once. Configure labels/endpoint in the published config.
+
 ## Manual placement
 
 Prefer to control exactly where the snippet renders? Turn off auto-injection
@@ -74,6 +93,9 @@ IMPROVEME_INJECT=false
 | `IMPROVEME_SCREENSHOT_PADDING` | `15` | Px captured around the selection. |
 | `IMPROVEME_TELEGRAM_TOKEN` | — | Bot token (enables Telegram). |
 | `IMPROVEME_TELEGRAM_CHAT_ID` | — | Target chat id. |
+| `IMPROVEME_GITHUB_ENABLED` | `false` | File a GitHub issue per report. |
+| `IMPROVEME_GITHUB_TOKEN` | — | PAT with `issues:write`. |
+| `IMPROVEME_GITHUB_REPO` | — | Target repo as `owner/repo`. |
 
 ## Publish & customise
 
