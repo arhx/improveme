@@ -311,6 +311,7 @@
       viewport: { w: window.innerWidth, h: window.innerHeight, dpr: window.devicePixelRatio || 1 },
       userAgent: navigator.userAgent,
       element: capture,
+      consoleErrors: (window.__IMPROVEME_ERRLOG__ || []).slice(-50),
       screenshot: screenshot
     };
 

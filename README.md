@@ -147,7 +147,13 @@ Route::post('feedback', \App\Http\Controllers\MyReportController::class);
 
 The report payload includes a unique CSS selector, the element's `outerHTML`
 (truncated), its bounding rect, the page URL/title, viewport, user agent, the
-authenticated user (if any) and the screenshot.
+request IP, the authenticated user id (just `Auth::id()` — no name/email), any
+buffered browser **console errors**, and the screenshot.
+
+Console/JS errors are captured from the moment the widget snippet is parsed:
+`console.error(...)`, uncaught `error` events (including failed resource loads)
+and `unhandledrejection` are buffered (last 50) and attached automatically — so
+a bug report comes with the relevant console output already in it.
 
 ## What gets sent
 
@@ -157,10 +163,16 @@ authenticated user (if any) and the screenshot.
   "message": "…",
   "page":   { "url": "…", "title": "…", "referrer": "…" },
   "viewport": { "w": 1440, "h": 900, "dpr": 2 },
+  "userAgent": "…",
   "element": { "selector": "…", "tag": "div", "html": "…", "rect": {…} },
+  "consoleErrors": [ { "level": "error", "text": "TypeError: …" } ],
   "screenshot": "data:image/png;base64,…"
 }
 ```
+
+The server additionally records the request **IP** and the authenticated
+**user id** (resolved from `Auth::id()`) — these are taken server-side, not from
+the payload.
 
 ## License
 

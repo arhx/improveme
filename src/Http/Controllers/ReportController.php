@@ -54,6 +54,9 @@ class ReportController
             'element.tag' => ['nullable', 'string', 'max:64'],
             'element.html' => ['nullable', 'string', 'max:'.max($maxHtml + 2000, 22000)],
             'screenshot' => ['nullable', 'string'],
+            'consoleErrors' => ['nullable', 'array', 'max:50'],
+            'consoleErrors.*.level' => ['nullable', 'string', 'max:16'],
+            'consoleErrors.*.text' => ['nullable', 'string', 'max:2000'],
         ];
     }
 

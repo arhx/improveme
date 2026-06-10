@@ -3,6 +3,7 @@
 namespace Arhx\Improveme\Reporting;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Normalised, transport-agnostic representation of one feedback report.
@@ -22,7 +23,9 @@ class ReportData
         public ?string $html = null,
         public ?array $viewport = null,  // ['w'=>, 'h'=>, 'dpr'=>]
         public ?string $userAgent = null,
-        public ?array $user = null,      // ['id'=>, 'name'=>, 'email'=>]
+        public ?string $ip = null,       // request IP address
+        public ?array $user = null,      // ['id'=>] — only Auth::id(), no PII
+        public ?array $consoleErrors = null, // browser console / JS errors, strings
         public ?string $screenshotPath = null, // absolute fs path once stored
         public ?array $raw = null,       // original payload, for custom channels
     ) {}
@@ -33,14 +36,9 @@ class ReportData
         $el = (array) $request->input('element', []);
         $vp = (array) $request->input('viewport', []);
 
-        $user = null;
-        if ($u = $request->user()) {
-            $user = array_filter([
-                'id' => $u->getAuthIdentifier(),
-                'name' => $u->name ?? null,
-                'email' => $u->email ?? null,
-            ], static fn ($v) => $v !== null);
-        }
+        // Only the bare authenticated id — no name/email, to keep reports PII-light.
+        $id = Auth::id();
+        $user = $id !== null ? ['id' => $id] : null;
 
         return new self(
             type: $type,
@@ -52,9 +50,33 @@ class ReportData
             html: $el['html'] ?? null,
             viewport: $vp ?: null,
             userAgent: $request->input('userAgent') ?: $request->userAgent(),
-            user: $user ?: null,
+            ip: $request->ip(),
+            user: $user,
+            consoleErrors: self::consoleErrors($request),
             raw: $request->all(),
         );
+    }
+
+    /**
+     * Normalise the client-collected console/JS errors into a capped list of
+     * trimmed strings, ignoring anything blank or malformed.
+     */
+    private static function consoleErrors(Request $request): ?array
+    {
+        $out = [];
+        foreach ((array) $request->input('consoleErrors', []) as $e) {
+            $text = is_array($e) ? (string) ($e['text'] ?? '') : (string) $e;
+            $text = trim($text);
+            if ($text === '') {
+                continue;
+            }
+            $out[] = mb_substr($text, 0, 2000);
+            if (count($out) >= 50) {
+                break;
+            }
+        }
+
+        return $out ?: null;
     }
 
     public function typeLabel(): string

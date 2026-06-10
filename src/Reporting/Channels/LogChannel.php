@@ -36,7 +36,9 @@ class LogChannel implements Channel
             'element' => $report->elementTag,
             'viewport' => $report->viewport,
             'user' => $report->user,
+            'ip' => $report->ip,
             'user_agent' => $report->userAgent,
+            'console_errors' => $report->consoleErrors,
             'screenshot' => $report->hasScreenshot() ? $report->screenshotPath : null,
             'html' => $report->html,
         ]);

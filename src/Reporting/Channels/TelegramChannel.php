@@ -76,12 +76,17 @@ class TelegramChannel implements Channel
             $meta[] = '🎯 <code>'.$this->escape($report->selector).'</code>';
         }
         if ($report->user) {
-            $who = $report->user['name'] ?? $report->user['email'] ?? ('#'.($report->user['id'] ?? '?'));
-            $meta[] = '👤 '.$this->escape((string) $who);
+            $meta[] = '👤 #'.$this->escape((string) ($report->user['id'] ?? '?'));
+        }
+        if ($report->ip) {
+            $meta[] = '🌐 <code>'.$this->escape($report->ip).'</code>';
         }
         if ($report->viewport) {
             $vp = $report->viewport;
             $meta[] = '🖥 '.($vp['w'] ?? '?').'×'.($vp['h'] ?? '?');
+        }
+        if ($report->userAgent) {
+            $meta[] = '🧭 <code>'.$this->escape($report->userAgent).'</code>';
         }
         if ($meta) {
             $lines[] = '';
@@ -89,6 +94,22 @@ class TelegramChannel implements Channel
         }
 
         $text = implode("\n", $lines);
+
+        // The console-errors block is the most likely to overflow, and naive
+        // truncation could slice a <pre> tag in half and break Telegram's HTML
+        // parser. So size it to whatever room is left and always close the tag.
+        if ($report->consoleErrors) {
+            $header = "\n\n⚠️ <b>Console errors</b> (".count($report->consoleErrors)."):\n<pre>";
+            $footer = '</pre>';
+            $room = $limit - mb_strlen($text) - mb_strlen($header) - mb_strlen($footer);
+            if ($room > 0) {
+                $body = $this->escape(implode("\n", $report->consoleErrors));
+                if (mb_strlen($body) > $room) {
+                    $body = mb_substr($body, 0, $room - 1).'…';
+                }
+                $text .= $header.$body.$footer;
+            }
+        }
 
         if (mb_strlen($text) > $limit) {
             $text = mb_substr($text, 0, $limit - 1).'…';
