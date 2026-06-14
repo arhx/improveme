@@ -19,6 +19,7 @@ class TelegramChannel implements Channel
 {
     // Telegram limits: 1024 chars for a photo caption, 4096 for a message.
     private const CAPTION_LIMIT = 1000;
+
     private const MESSAGE_LIMIT = 4000;
 
     public function __construct(private array $config) {}

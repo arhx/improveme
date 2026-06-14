@@ -8,9 +8,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Appends the widget snippet right before </body> on HTML responses, giving a
- * zero-template-edit integration. Skips non-HTML, redirects, AJAX/JSON and the
- * package's own endpoints. Disable with IMPROVEME_INJECT=false to place the
- * @improveme directive manually instead.
+ * zero-template-edit integration. Skips non-HTML, redirects, AJAX/JSON, Inertia
+ * visits and the package's own endpoints. Disable with IMPROVEME_INJECT=false to
+ * place the Blade directive manually instead.
  */
 class InjectImproveme
 {
@@ -46,7 +46,12 @@ class InjectImproveme
             return false;
         }
 
-        if ($request->ajax() || $request->wantsJson() || $request->isJson()) {
+        // Skip XHR/JSON, and Inertia visits explicitly: an Inertia navigation is
+        // an XHR carrying an X-Inertia header whose response is a JSON page
+        // object, not an HTML document. The widget is injected once into the
+        // initial full-page HTML and survives client-side navigation, so it must
+        // never be appended to these partial responses.
+        if ($request->ajax() || $request->wantsJson() || $request->isJson() || $request->hasHeader('X-Inertia')) {
             return false;
         }
 

@@ -318,12 +318,11 @@
     fetch(CFG.endpoint, {
       method: 'POST',
       credentials: 'same-origin',
-      headers: {
+      headers: csrfHeaders({
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
-        'X-CSRF-TOKEN': CFG.token || ''
-      },
+        'X-Requested-With': 'XMLHttpRequest'
+      }),
       body: JSON.stringify(payload)
     }).then(function (r) {
       if (!r.ok) throw new Error('http ' + r.status);
@@ -346,6 +345,33 @@
   function setStatus(txt, kind) {
     status.textContent = txt || '';
     status.className = 'im-status' + (kind ? ' ' + kind : '');
+  }
+
+  // Attach the freshest CSRF token available. In an Inertia/SPA session the page
+  // never reloads, so the token embedded inline at first paint goes stale once the
+  // server-side session regenerates (e.g. after a login). Laravel keeps the
+  // `XSRF-TOKEN` cookie current on every response, so we prefer it — sent the
+  // axios way as `X-XSRF-TOKEN` — and fall back to the inline token only when no
+  // cookie is present. We send just one of the two: Laravel reads `X-CSRF-TOKEN`
+  // before `X-XSRF-TOKEN`, so a stale inline token would otherwise win.
+  function csrfHeaders(headers) {
+    var name = CFG.xsrfCookie || 'XSRF-TOKEN';
+    var xsrf = readCookie(name);
+    if (xsrf) headers['X-XSRF-TOKEN'] = xsrf;
+    else if (CFG.token) headers['X-CSRF-TOKEN'] = CFG.token;
+    return headers;
+  }
+
+  function readCookie(name) {
+    var parts = (document.cookie || '').split(';');
+    for (var i = 0; i < parts.length; i++) {
+      var p = parts[i].trim();
+      if (p.indexOf(name + '=') === 0) {
+        try { return decodeURIComponent(p.slice(name.length + 1)); }
+        catch (e) { return p.slice(name.length + 1); }
+      }
+    }
+    return null;
   }
   function shake(el) { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = 'im-shake .3s'; }
   function unique(sel) { try { return document.querySelectorAll(sel).length === 1; } catch (e) { return false; } }

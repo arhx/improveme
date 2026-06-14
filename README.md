@@ -63,6 +63,31 @@ a screenshot reference in the body, labelled `improveme` + `bug`/`enhancement`
 (missing labels are created automatically). Channels stack — Telegram and GitHub
 can both be on at once. Configure labels/endpoint in the published config.
 
+## Inertia (Vue / React) projects
+
+improveme works out of the box in Laravel + Inertia apps — no Inertia dependency
+is added to your project. A few notes on how it fits an SPA:
+
+- **One injection, survives navigation.** The snippet is injected once into the
+  initial full-page HTML (your root template, e.g. `app.blade.php`, which contains
+  `</body>`) and attaches to `<html>` — outside Inertia's app root — so the widget
+  stays put across client-side visits. Inertia's partial XHR responses (carrying
+  the `X-Inertia` header) and any AJAX/JSON responses are never touched.
+- **Fresh CSRF token.** In an SPA the page never reloads, so a token captured at
+  first paint can go stale once the server-side session regenerates (a login via
+  Fortify/Sanctum, say). The widget therefore reads Laravel's `XSRF-TOKEN` cookie
+  at send-time — the same approach axios uses — and only falls back to the inline
+  token when no cookie is present. This avoids spurious `419 TokenMismatch` errors
+  on long-lived sessions. Override the cookie name with `IMPROVEME_XSRF_COOKIE` if
+  you have customised it.
+- **JSON in, JSON out.** The report endpoint always responds with JSON (a `200
+  {ok:true}`, or `422 {ok:false, errors}` on validation failure) — never a redirect
+  or a flash message — so it composes cleanly with `HandleInertiaRequests` and your
+  shared props without interfering with them.
+
+Nothing extra to configure: `composer require arhx/improveme` and the widget shows
+up. Restrict it to staging/authenticated users with the env switches below.
+
 ## Manual placement
 
 Prefer to control exactly where the snippet renders? Turn off auto-injection
@@ -91,6 +116,7 @@ IMPROVEME_INJECT=false
 | `IMPROVEME_HOVER_COLOR` | `#3b82f6` | Element hover outline. |
 | `IMPROVEME_SELECTED_COLOR` | `#22c55e` | Picked element outline. |
 | `IMPROVEME_SCREENSHOT_PADDING` | `15` | Px captured around the selection. |
+| `IMPROVEME_XSRF_COOKIE` | `XSRF-TOKEN` | Cookie read for a fresh CSRF token (SPA/Inertia). |
 | `IMPROVEME_TELEGRAM_TOKEN` | — | Bot token (enables Telegram). |
 | `IMPROVEME_TELEGRAM_CHAT_ID` | — | Target chat id. |
 | `IMPROVEME_GITHUB_ENABLED` | `false` | File a GitHub issue per report. |

@@ -62,6 +62,12 @@ return [
         'z_index' => (int) env('IMPROVEME_Z_INDEX', 2147483000),
         'screenshot_padding' => (int) env('IMPROVEME_SCREENSHOT_PADDING', 15), // px around selection
         'max_html' => (int) env('IMPROVEME_MAX_HTML', 20000), // truncate captured outerHTML
+        // Cookie the widget reads to obtain a fresh CSRF token at send-time. In a
+        // SPA / Inertia session the inline token captured at first paint can go
+        // stale (e.g. after a login regenerates the session); Laravel keeps this
+        // cookie current on every web response. Defaults to Laravel's standard
+        // XSRF-TOKEN — only change it if you have customised the cookie name.
+        'xsrf_cookie' => env('IMPROVEME_XSRF_COOKIE', 'XSRF-TOKEN'),
         // CDN for the screenshot engine (lazy-loaded only when a screenshot is
         // taken). Defaults to html2canvas-pro — a maintained html2canvas fork
         // that supports modern CSS colour functions (oklch/lab/color()), which

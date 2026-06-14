@@ -19,7 +19,8 @@
     },
     "require-dev": {
         "orchestra/testbench": "^8.0|^9.0|^10.0",
-        "laravel/pint": "^1.0"
+        "laravel/pint": "^1.0",
+        "phpunit/phpunit": "^10.5|^11.0|^12.0"
     },
     "autoload": {
         "psr-4": {
@@ -40,6 +41,10 @@
     },
     "minimum-stability": "stable",
     "prefer-stable": true,
+    "scripts": {
+        "test": "phpunit",
+        "lint": "pint"
+    },
     "config": {
         "sort-packages": true
     }

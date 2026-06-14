@@ -20,6 +20,7 @@
         'zIndex' => (int) ($w['z_index'] ?? 2147483000),
         'screenshotPadding' => (int) ($w['screenshot_padding'] ?? 15),
         'maxHtml' => (int) ($w['max_html'] ?? 20000),
+        'xsrfCookie' => $w['xsrf_cookie'] ?? 'XSRF-TOKEN',
         'html2canvasUrl' => $w['html2canvas_url'] ?? '',
         'labels' => $w['labels'] ?? [],
     ];
