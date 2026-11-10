@@ -3,6 +3,24 @@
 All notable changes to `arhx/improveme` are documented here. This project adheres
 to [Semantic Versioning](https://semver.org/).
 
+## [1.4.0] - 2026-11-10
+
+### Changed
+- **Dropped `irazasyed/telegram-bot-sdk`.** The Telegram channel now calls the
+  Bot API directly through Laravel's HTTP client (`sendPhoto` as multipart with
+  the screenshot, `sendMessage` otherwise). The SDK pinned Guzzle to `^7`, which
+  forced Laravel 13 apps on Guzzle 8 to downgrade; the package now works with
+  both Guzzle 7 and 8. Config keys and message format are unchanged.
+- Bot API errors (`"ok": false` / HTTP 4xx-5xx) are logged as a warning with the
+  HTTP status and the API's description; delivery never throws. The bot token
+  is masked in logged transport errors (they quote the request URL).
+- Dev: Orchestra Testbench `^11` (Laravel 13) allowed.
+
+### Added
+- `IMPROVEME_TELEGRAM_API_URL` (`improveme.channels.telegram.api_url`) for a
+  self-hosted Bot API server.
+- HTTP tests for the Telegram and GitHub channels (`Http::fake`).
+
 ## [1.3.0] - 2026-06-15
 
 ### Added
@@ -45,6 +63,7 @@ to [Semantic Versioning](https://semver.org/).
   Auto-injection middleware, `@improveme` Blade directive, publishable
   config/views/assets, overridable route/controller.
 
+[1.4.0]: https://github.com/arhx/improveme/releases/tag/v1.4.0
 [1.3.0]: https://github.com/arhx/improveme/releases/tag/v1.3.0
 [1.2.0]: https://github.com/arhx/improveme/releases/tag/v1.2.0
 [1.1.0]: https://github.com/arhx/improveme/releases/tag/v1.1.0

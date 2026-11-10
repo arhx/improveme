@@ -3,13 +3,13 @@
 namespace Arhx\Improveme\Reporting\Channels;
 
 use Arhx\Improveme\Reporting\ReportData;
+use Illuminate\Http\Client\Response;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Telegram\Bot\Api;
-use Telegram\Bot\FileUpload\InputFile;
 
 /**
- * Sends the report to a Telegram chat via irazasyed/telegram-bot-sdk's bare
- * Api client (no Laravel service provider / no extra infrastructure).
+ * Sends the report to a Telegram chat straight through the Bot API using
+ * Laravel's HTTP client — no SDK, so no extra Guzzle version constraint.
  *
  * A screenshot, when present, is uploaded as a photo with the report as its
  * caption; otherwise a plain text message is sent. Disabled automatically
@@ -34,32 +34,50 @@ class TelegramChannel implements Channel
     public function send(ReportData $report): void
     {
         try {
-            $api = new Api($this->config['token']);
-            $chatId = $this->config['chat_id'];
-            $parseMode = $this->config['parse_mode'] ?? 'HTML';
+            $endpoint = rtrim($this->config['api_url'] ?? 'https://api.telegram.org', '/')
+                .'/bot'.$this->config['token'].'/';
 
             $base = [
-                'chat_id' => $chatId,
-                'parse_mode' => $parseMode,
+                'chat_id' => (string) $this->config['chat_id'],
+                'parse_mode' => $this->config['parse_mode'] ?? 'HTML',
             ];
             if (! empty($this->config['message_thread_id'])) {
-                $base['message_thread_id'] = $this->config['message_thread_id'];
+                $base['message_thread_id'] = (string) $this->config['message_thread_id'];
             }
 
+            $http = Http::acceptJson()->timeout(20);
+
             if ($report->hasScreenshot()) {
-                $api->sendPhoto($base + [
-                    'photo' => InputFile::create($report->screenshotPath, 'screenshot.png'),
-                    'caption' => $this->text($report, self::CAPTION_LIMIT),
-                ]);
+                $response = $http
+                    ->attach('photo', file_get_contents($report->screenshotPath), 'screenshot.png')
+                    ->post($endpoint.'sendPhoto', $base + [
+                        'caption' => $this->text($report, self::CAPTION_LIMIT),
+                    ]);
             } else {
-                $api->sendMessage($base + [
+                $response = $http->asForm()->post($endpoint.'sendMessage', $base + [
                     'text' => $this->text($report, self::MESSAGE_LIMIT),
-                    'disable_web_page_preview' => true,
+                    'disable_web_page_preview' => 'true',
                 ]);
             }
+
+            $this->checkResponse($response);
         } catch (\Throwable $e) {
             // Never let a transport failure bubble up to the user-facing request.
-            Log::warning('improveme: telegram delivery failed', ['error' => $e->getMessage()]);
+            // Transport errors quote the request URL, and the URL carries the bot token.
+            Log::warning('improveme: telegram delivery failed', [
+                'error' => str_replace((string) $this->config['token'], '***', $e->getMessage()),
+            ]);
+        }
+    }
+
+    /** The Bot API reports errors as HTTP 4xx/5xx and/or `"ok": false`. */
+    private function checkResponse(Response $response): void
+    {
+        if ($response->failed() || $response->json('ok') !== true) {
+            Log::warning('improveme: telegram delivery failed', [
+                'status' => $response->status(),
+                'error' => $response->json('description') ?? $response->body(),
+            ]);
         }
     }
 

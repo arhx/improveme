@@ -44,6 +44,11 @@ as caption). Leave them unset and only the log channel runs.
 
 To send into a forum topic: `IMPROVEME_TELEGRAM_THREAD_ID=42`.
 
+Delivery goes straight to the Bot API through Laravel's HTTP client — no
+Telegram SDK, so the package adds no Guzzle constraint of its own (works with
+Guzzle 7 and 8). A self-hosted Bot API server can be set with
+`IMPROVEME_TELEGRAM_API_URL`.
+
 ## File GitHub issues (optional)
 
 Turn each report into a GitHub issue in your repo's tracker — handy when you
@@ -119,6 +124,8 @@ IMPROVEME_INJECT=false
 | `IMPROVEME_XSRF_COOKIE` | `XSRF-TOKEN` | Cookie read for a fresh CSRF token (SPA/Inertia). |
 | `IMPROVEME_TELEGRAM_TOKEN` | — | Bot token (enables Telegram). |
 | `IMPROVEME_TELEGRAM_CHAT_ID` | — | Target chat id. |
+| `IMPROVEME_TELEGRAM_THREAD_ID` | — | Forum topic id (optional). |
+| `IMPROVEME_TELEGRAM_API_URL` | `https://api.telegram.org` | Bot API endpoint. |
 | `IMPROVEME_GITHUB_ENABLED` | `false` | File a GitHub issue per report. |
 | `IMPROVEME_GITHUB_TOKEN` | — | PAT with `issues:write`. |
 | `IMPROVEME_GITHUB_REPO` | — | Target repo as `owner/repo`. |

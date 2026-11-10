@@ -115,6 +115,8 @@ return [
             'message_thread_id' => env('IMPROVEME_TELEGRAM_THREAD_ID'),
             // 'HTML' or 'MarkdownV2'
             'parse_mode' => 'HTML',
+            // Override for a self-hosted Bot API server.
+            'api_url' => env('IMPROVEME_TELEGRAM_API_URL', 'https://api.telegram.org'),
         ],
 
         // Files a GitHub issue per report so the feedback lands right in the
